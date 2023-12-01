@@ -1,10 +1,12 @@
+import re
+from _operator import itemgetter
+
 def sol(part):
-    id_lol = 0
     res = 0
     with open("../input.txt") as file:
-        # for line in file:
         lines = file.read().strip().split('\n')
-        dict = {
+        numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        words = {
             "one": 1,
             "two": 2,
             "three": 3,
@@ -16,56 +18,31 @@ def sol(part):
             "nine": 9
         }
         for line in lines:
-            print(line)
-            value = ""
-            valdict = {}
-            val = []
-            if part == 2:
-                for c in line:
-                    if c.isdigit():
-                        index = line.find(c)
-                        if index != -1:
-                            valdict[id_lol] = [int(c), index]
-                            id_lol = id_lol + 1
-                for key in dict:
-                    index = line.find(key)
-                    if index != -1:
-                        valdict[id_lol] = [dict[key], index]
-                        id_lol = id_lol + 1
-
-                # for i in line:
-                #     value = value + str(i)
-                #     print(i)
-                #     print(value)
-                #     for key in dict:
-                #         if key in value:
-                #             value = value.replace(key, str(dict[key]))
-                # for char in line:
-                #     value = value + (str(char))
-                #     for key in dict:
-                #         if key in value:
-                #             value = value.replace(key, str(dict[key]))
-            print(valdict)
-            print(sorted(valdict.items(), key=lambda item: item[1][1]))
-            sorted_list = sorted(valdict.items(), key=lambda item: item[1][1])
-            print(sorted_list)
-            new_list = []
-            for i in range(len(sorted_list)):
-                new_list.append(sorted_list[i][1][0])
-            print(new_list)
-            # print(str(sorted_list[1][0]))
-            # print(str(sorted_list[1][-1]))
-            if part == 2:
-                if len(new_list) > 0:
-                    print(int(str(new_list[0]) + str(new_list[-1])))
-                    res = res + int(str(new_list[0]) + str(new_list[-1]))
             if part == 1:
-                for char in value:
+                end_values = []
+                for char in line:
                     if char.isdigit():
-                        val.append(char)
-                if len(val) > 0:
-                    print(int(str(val[0]) + str(val[-1])))
-                    res = res + int(str(val[0]) + str(val[-1]))
+                        end_values.append(char)
+                if len(end_values) > 0:
+                    res = res + int(str(end_values[0]) + str(end_values[-1]))
+            if part == 2:
+                calibration_values = []
+                for number in numbers:
+                    for i, letter in enumerate(line):
+                        if letter.isdigit():
+                            if int(letter) == number:
+                                calibration_values.append([int(letter), i])
+                for key in words:
+                    indexes = [m.start() for m in re.finditer(key, line)]
+                    if len(indexes) > 0:
+                        for index in indexes:
+                            calibration_values.append([words[key], index])
+                sorted_list = sorted(calibration_values, key=itemgetter(1))
+                final_list = []
+                for i in range(len(sorted_list)):
+                    final_list.append(sorted_list[i][0])
+                if len(final_list) > 0:
+                    res = res + int(str(final_list[0]) + str(final_list[-1]))
     return res
 
 
