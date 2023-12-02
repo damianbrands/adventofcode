@@ -28,18 +28,23 @@ def sol(part):
             for set1 in sets:
                 for cube in set1:
                     if cube[1] == 'red':
-                        red_cur = red_cur + int(cube[0])
+                        if(int(cube[0])) > red_cur:
+                            red_cur = int(cube[0])
                     if cube[1] == 'green':
-                        green_cur = green_cur + int(cube[0])
+                        if (int(cube[0])) > green_cur:
+                            green_cur = int(cube[0])
                     if cube[1] == 'blue':
-                        blue_cur = blue_cur + int(cube[0])
-            if red_cur <= red_cubes and green_cur <= green_cubes and blue_cur <= blue_cubes:
-                res += game_id
-
+                        if (int(cube[0])) > blue_cur:
+                            blue_cur = int(cube[0])
+            if part == 2:
+                res += red_cur * green_cur * blue_cur
+            if part == 1:
+                if red_cur <= red_cubes and green_cur <= green_cubes and blue_cur <= blue_cubes:
+                    res += game_id
     return res
 
 
 if __name__ == "__main__":
     print(sol(1))
     print("----------------")
-    # print(sol(2))
+    print(sol(2))
