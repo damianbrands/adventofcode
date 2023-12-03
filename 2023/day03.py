@@ -1,65 +1,65 @@
 import re
 
+def makeGrid(lines):
+    grid = []
+    for row in lines:
+        grid_row = []
+        for i in range(len(row)):
+            grid_row.append(row[i])
+        grid.append(grid_row)
+    return grid
 
-def check(num_cur, num_last, symbol_cur, symbol_last):
-    yes_numbers = {}
-    for number in num_cur:
-        number_indexes = [*range(number[1], number[1] + len(str(number[0])), 1)]
-        checker = True
-        for symbol in symbol_last:
-            for index in number_indexes:
-                if symbol[1] - 1 == index or symbol[1] == index or symbol[1] + 1 == index:
-                    checker = False
-        if not checker:
-            yes_numbers[int(number[0])] = number[1]
-    for number in num_last:
-        number_indexes = [*range(number[1], number[1] + len(str(number[0])), 1)]
-        checker = True
-        for symbol in symbol_cur:
-            for index in number_indexes:
-                if symbol[1] - 1 == index or symbol[1] == index or symbol[1] + 1 == index:
-                    checker = False
-        if not checker:
-            yes_numbers[int(number[0])] = number[1]
-    return yes_numbers
+
+def extract_subgrid(grid, row, col):
+    subgrid = []
+    for i in range(row - 1, row + 2):
+        subgrid_row = []
+        for j in range(0, len(grid[0])):
+            subgrid_row.append(grid[i][j])
+        subgrid.append(subgrid_row)
+    return subgrid
+
+
+def get_numbers(lines):
+    numbers_per_row = []
+    for i, row in enumerate(lines):
+        numbers = re.findall(r'\d+', row)
+        indexes = list(re.finditer(r'\d+', row))
+        num_i = []
+        for j in range(len(numbers)):
+            num_i.append([numbers[j], indexes[j].start(0), indexes[j].end(0) - 1])
+        print(i, num_i)
+        numbers_per_row.append(num_i)
+    return numbers_per_row
 
 
 def sol(part):
-    first_loop = True
-    not_these = []
+    special_characters = "!@#$%^&*()-+?_=,<>/"
+    num_characters = "1234567890"
+    res = 0
+    number_dict = {}  # {[0, 467]: 0, [0, 114]: 5}
     with open("../input.txt") as file:
         lines = file.read().strip().split('\n')
-        last_line_numbers = []
-        last_line_symbols = []
-        for line in lines:
-            current_line_numbers = []
-            current_line_symbols = []
-            line_numbers = re.findall(r'\d+', line)
-            line_symbols = re.findall(r'[^.]+', line)
-            filtered_list = [item for item in line_symbols if not item.isdigit()]
-            line_symbols = filtered_list
-            for sym in line_symbols:
-                if len(str(sym)) > 1:
-                    num = re.sub(r'\D', '', sym)
-                    not_these.append(int(num))
-            for number in line_numbers:
-                index = line.rfind(number)
-                current_line_numbers.append([number, index])
-            for symbol in line_symbols:
-                index = line.rfind(symbol)
-                current_line_symbols.append([symbol, index])
-            if not first_loop:
-                not_numbers = check(current_line_numbers,
-                                    last_line_numbers,
-                                    current_line_symbols,
-                                    last_line_symbols)
-                for num in not_numbers:
-                    not_these.append(num)
-            first_loop = False
-            last_line_numbers = current_line_numbers
-            last_line_symbols = current_line_symbols
-        print(not_these)
-    res = sum(not_these)
+        grid = makeGrid(lines)
+        numbers = get_numbers(lines)
+        print(numbers)
+        for y, row in enumerate(grid):
+            for x, char in enumerate(row):
+                if char in special_characters:
+                    subgrid = extract_subgrid(grid, x, y)
+                    for i in range(-1, 2):
+                        looking_y = y + i
+                        for j in range(-1, 2):
+                            looking_x = x + j
+                            for number in numbers[looking_y]:
+                                # if looking_x == number[1] or looking_x == number[2]:
+                                #     number_dict[looking_y, number[0]] = looking_x
+                                if (x - 1 <= number[1] <= x + 1) or (x - 1 <= number[2] <= x + 1):
+                                    number_dict[number[1], looking_y] = int(number[0])
+                    print("---------------")
+        print(number_dict)
+        for key in number_dict:
+            res += number_dict[key]
     return res
 
 
