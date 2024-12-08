@@ -11,7 +11,10 @@ def sol(part):
             answer, pre_split_numbers = full_line
             numbers = pre_split_numbers.strip().split(' ')
             answer = int(answer)
-            operators = ['+', '*']
+            if part == 1:
+                operators = ['+', '*']
+            if part == 2:
+                operators = ['+', '*', '||']
             operator_combinations = product(operators, repeat=len(numbers) - 1)
 
             for i in range(len(numbers)):
@@ -19,11 +22,14 @@ def sol(part):
 
             for operator_list in operator_combinations:
                 result = numbers[0]
+
                 for i, operator in enumerate(operator_list):
                     if operator == '+':
                         result += numbers[i + 1]
                     elif operator == '*':
                         result *= numbers[i + 1]
+                    elif operator == '||':
+                        result = int(str(result) + str(numbers[i + 1]))
                 if result == answer:
                     res += answer
                     break
@@ -32,3 +38,5 @@ def sol(part):
 
 if __name__ == "__main__":
     print(sol(1))
+    print("----------------")
+    print(sol(2))
